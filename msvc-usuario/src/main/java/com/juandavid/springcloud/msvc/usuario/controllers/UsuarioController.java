@@ -52,7 +52,7 @@ public class UsuarioController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@Valid  @RequestBody Usuario usuario, BindingResult result, @PathVariable Long id) {
+    public ResponseEntity<?> editar(@Valid @RequestBody Usuario usuario, BindingResult result, @PathVariable Long id) {
 
         if(result.hasErrors()) {
             return validar(result);
@@ -60,15 +60,15 @@ public class UsuarioController {
 
         Optional<Usuario> o = service.porId(id);
         if (o.isPresent()){
-
             Usuario usuarioDb = o.get();
-
-            if(!usuario.getEmail().equalsIgnoreCase(usuarioDb.getEmail()) && service.buscarPorEmail(usuario.getEmail()).isPresent()) {
+            if(!usuario.getEmail().isEmpty() &&
+                    !usuario.getEmail().equalsIgnoreCase(usuarioDb.getEmail()) &&
+                    service.buscarPorEmail(usuario.getEmail()).isPresent()) {
                 return  ResponseEntity.badRequest()
                         .body(Collections.singletonMap("error", "Email ya existe"));
             }
             usuarioDb.setNombre(usuario.getNombre());
-            usuarioDb.setNombre(usuario.getEmail());
+            usuarioDb.setEmail(usuario.getEmail());
             usuarioDb.setEmail(usuario.getPassword());
             return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(usuarioDb));
         }
@@ -77,7 +77,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id, BindingResult result) {
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
         Optional<Usuario> o = service.porId(id);
         if (o.isPresent()) {
             service.eliminar(id);
@@ -87,7 +87,7 @@ public class UsuarioController {
         return  ResponseEntity.notFound().build();
     }
 
-    //Metodos
+    //Metodos static
 
     private static ResponseEntity<Map<String, String>> validar(BindingResult result) {
         Map<String,String> errores = new HashMap<>();

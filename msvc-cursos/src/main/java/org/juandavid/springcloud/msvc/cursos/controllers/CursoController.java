@@ -1,20 +1,17 @@
 package org.juandavid.springcloud.msvc.cursos.controllers;
 
-import jakarta.persistence.Access;
+import feign.FeignException;
 import jakarta.validation.Valid;
-import org.juandavid.springcloud.msvc.cursos.entity.Curso;
+import org.juandavid.springcloud.msvc.cursos.models.Usuario;
+import org.juandavid.springcloud.msvc.cursos.models.entity.Curso;
 import org.juandavid.springcloud.msvc.cursos.services.CursoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class CursoController {
@@ -35,6 +32,9 @@ public class CursoController {
         }
         return ResponseEntity.notFound().build();
     }
+
+
+    //CRUDs
 
     @PostMapping("/")
     public ResponseEntity<?> crear(@Valid @RequestBody Curso curso, BindingResult result) {
@@ -59,16 +59,71 @@ public class CursoController {
         }
         return ResponseEntity.notFound().build();
     }
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
 
         Optional<Curso> o = service.porId(id);
         if (o.isPresent()) {
-            service.eliminar(id);
+            service.eliminar(o.get().getId());
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PutMapping("/asignar-usuario/{cursoId}")
+    public ResponseEntity<?> asignarUsuario(@RequestBody Usuario usuario, @PathVariable Long cursoId) {
+        Optional<Usuario> o;
+        try {
+            o = service.asignarUsuario(usuario, cursoId);
+        } catch (FeignException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("mensaje", "No existe el usuario por " +
+                            "el id o error en la comunicacion: " + e.getMessage()));
+        }
+        if (o.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(o.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/crear-usuario/{cursoId}")
+    public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario ,@PathVariable Long cursoId) {
+        Optional<Usuario> opt;
+        try {
+            opt = service.crearUsuario(usuario, cursoId);
+        }catch (FeignException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("mensaje", "No se pudo crear el usuario " +
+                            "ó error de comunicación"
+                            + e.getMessage()));
+        }
+        if (opt.isPresent()){
+            return ResponseEntity.status(HttpStatus.CREATED).body(opt.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
+    @DeleteMapping("/eliminar-usuario/{cursoId}")
+    public ResponseEntity<?> eliminarUsuario(@RequestBody Usuario usuario, @PathVariable Long cursoId) {
+        Optional<Usuario> opt;
+        try {
+            opt = service.eliminarUsuario(usuario, cursoId);
+        }catch (FeignException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("mensaje", "No existe el usuario por" +
+                            " el id o error de comunicación"
+                            + e.getMessage()));
+        }
+        if (opt.isPresent()){
+            return ResponseEntity.status(HttpStatus.OK).body(opt.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
+
+    //Static
     private static ResponseEntity<Map<String, String>> validar(BindingResult result) {
         Map<String,String> errores = new HashMap<>();
         result.getFieldErrors().forEach(err -> {
