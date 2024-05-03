@@ -13,9 +13,9 @@ public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
 
     //Otra forma de realizar consulta en la BD
 
-    //@Query("select u from Usuario u where u.email=?1")
-    //Optional<Usuario> porEmail(String username);
+    @Query("select u from Usuario u where u.email=?1")
+    Optional<Usuario> porEmail(String username);
 
-    // boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 
 }

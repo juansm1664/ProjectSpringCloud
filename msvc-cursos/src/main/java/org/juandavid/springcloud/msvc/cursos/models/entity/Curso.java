@@ -34,6 +34,13 @@ public class Curso {
         usuarios = new ArrayList<>();
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
     public String getNombre() {
         return nombre;
     }
@@ -42,13 +49,7 @@ public class Curso {
         this.nombre = nombre;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public void addCursoUsuario(CursoUsuario cursoUsuario) {
         cursoUsuarios.add(cursoUsuario);

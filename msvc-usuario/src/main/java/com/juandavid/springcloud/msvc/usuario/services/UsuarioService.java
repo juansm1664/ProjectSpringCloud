@@ -2,6 +2,7 @@ package com.juandavid.springcloud.msvc.usuario.services;
 
 import com.juandavid.springcloud.msvc.usuario.models.entity.Usuario;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +12,8 @@ public interface UsuarioService {
     Usuario guardar (Usuario usuario);
     void eliminar(Long id);
 
+    List<Usuario> listarPorIds(Iterable<Long> ids);
     Optional<Usuario> buscarPorEmail(String email);
+    boolean existePorEmail(String email);
 
 }

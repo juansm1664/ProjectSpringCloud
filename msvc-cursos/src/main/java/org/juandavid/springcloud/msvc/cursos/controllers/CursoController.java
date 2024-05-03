@@ -24,17 +24,17 @@ public class CursoController {
         return ResponseEntity.ok(service.listar());
     }
 
+    //CRUDs
+
     @GetMapping("/{id}")
     public ResponseEntity<?> detalle(@PathVariable Long id) {
-        Optional<Curso> o = service.porId(id);
+        Optional<Curso> o = service.porIdConUsuarios(id);  // id independientes -> service.porId(id);
         if (o.isPresent()) {
             return ResponseEntity.ok(o.get());
         }
         return ResponseEntity.notFound().build();
     }
 
-
-    //CRUDs
 
     @PostMapping("/")
     public ResponseEntity<?> crear(@Valid @RequestBody Curso curso, BindingResult result) {
@@ -121,6 +121,11 @@ public class CursoController {
         return ResponseEntity.notFound().build();
     }
 
+    @DeleteMapping("/eliminar-curso-usuario/{id}")
+    public ResponseEntity<?> eliminarCursoUsuarioPorId(@PathVariable Long id) {
+        service.eliminarCursoUsuarioPorId(id);
+        return ResponseEntity.noContent().build();
+    }
 
 
     //Static

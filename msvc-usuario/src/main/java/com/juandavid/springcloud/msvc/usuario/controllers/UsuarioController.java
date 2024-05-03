@@ -34,14 +34,13 @@ public class UsuarioController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> crear(@Valid  @RequestBody Usuario usuario, BindingResult result) {
+    public ResponseEntity<?> crear(@Valid @RequestBody Usuario usuario, BindingResult result) {
 
         if(result.hasErrors()) {
             return validar(result);
         }
 
-        if(!usuario.getEmail().isEmpty() && service.buscarPorEmail(usuario.getEmail()).isPresent()) {
+        if(!usuario.getEmail().isEmpty() && service.existePorEmail(usuario.getEmail())) {
             return  ResponseEntity.badRequest()
                     .body(Collections.singletonMap("error", "Email ya existe"));
         }
@@ -51,6 +50,7 @@ public class UsuarioController {
     }
 
 
+    //Editar usuario por id
     @PutMapping("/{id}")
     public ResponseEntity<?> editar(@Valid @RequestBody Usuario usuario, BindingResult result, @PathVariable Long id) {
 
@@ -75,6 +75,7 @@ public class UsuarioController {
         return  ResponseEntity.notFound().build();
 
     }
+    //Eliminar por id
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
@@ -86,6 +87,12 @@ public class UsuarioController {
         }
         return  ResponseEntity.notFound().build();
     }
+    //Consulta para mostrar los usuarios por ids - keys: ids params: 1,3,9(ids de usuarios)
+    @GetMapping("/usuarios-por-curso")
+    public ResponseEntity<?> obtenerUsuarioCurso(@RequestParam List<Long> ids) {
+        return ResponseEntity.ok(service.listarPorIds(ids));
+    }
+
 
     //Metodos static
 
