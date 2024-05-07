@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="5f53f468-8847-44dd-bc91-e16b5ea8c198" name="msvc-cursos">
+      <data-sources db="4942f416-648b-495e-af10-d6c67258fcb9" ddl="86f61504-db1f-47f3-bbd7-59e314e3d1ca" />
+    </mapping>
+  </component>
+</project>
